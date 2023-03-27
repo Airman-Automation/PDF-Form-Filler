@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    {% csrf_token %}
+    <head>
+        <script type="text/javascript">
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            function submit_form() {
+                var data = {};
+                const formData = new FormData(document.querySelector("#fill_form"))
+                formData.forEach(function(value, key){
+                    data[key] = value;
+                });
+                var json = JSON.stringify(data);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/api/resp", true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                xhr.send(json);
+            }
+        </script>
+    </head>
+    <body>
+        <form action="/api/resp" method="post" id="fill_form">
+            {% for annot in pdf %}
+                {% if annot.FT == "/Btn" %}
+                    <input type="hidden" name="{{ annot.T }}" value="Off"/>
+                    <input
+                        type="checkbox"
+                        id="{{ annot.idx }}"
+                        name="{{ annot.T }}"
+                        value="On"
+                    >
+                    <label for="{{ annot.idx }}">{{ annot.T }}</label>
+                {% endif %}
+                {% if annot.FT == "/Tx" %}
+                    <label for="{{ annot.idx }}">{{ annot.T }}</label><br>
+                    <input type="text" id="{{ annot.idx }}" name="{{ annot.T }}" value="">
+                {% endif %}
+                <br><br>
+            {% endfor %}
+            {% comment %} <button type="submit">Save form</button> {% endcomment %}
+            <input type="button" id="form_submit" value="Submit" onclick="submit_form()" />
+        </form>
+    </body>
+</html>

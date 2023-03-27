@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  {% csrf_token %}
+  <head>
+    <script type="text/javascript">
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      const csrftoken = getCookie("csrftoken");
+
+      function singleRequest() {
+        var user = document.getElementById("user").getAttribute('data-value');
+        var filename = document.getElementById("forms").value;
+
+        var data = {
+          user: user,
+          filename: filename,
+        };
+        var json = JSON.stringify(data);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/fill", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+        // https://stackoverflow.com/questions/16080655/why-is-this-function-not-waiting-until-it-has-data-from-xhr-request
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            location.href =
+              "{% url 'viewer:viewer' %}?file=%2Fstatic%2F" + user + "_template_" + filename;
+          }
+        };
+
+        xhr.send(json);
+      }
+
+      function groupRequest() {
+        var filename = document.getElementById("forms").value;
+        location.href = "{% url 'viewer:viewer' %}?file=%2Fstatic%2F" + filename;
+      }
+
+      function uploadForm() {
+        var create_form = document.createElement('input');
+        create_form.type = "file";
+        create_form.onchange = e => {
+          // getting a hold of the file reference
+          var file = e.target.files[0];
+
+          var formData = new FormData();
+          formData.append("new_file", file)
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/api/upload");
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(formData);
+
+          xhr.onreadystatechange = function () {
+            window.location.href = window.location.href;
+          }
+        };
+        create_form.click();
+      }
+    </script>
+  </head>
+  <body>
+    <label for="forms">Choose a form:</label>
+
+    <select name="forms" id="forms">
+      {% for form in forms %}
+      <option value="{{ form }}">{{ form }}</option>
+      {% endfor %}
+    </select>
+
+    <button onclick="singleRequest()">Single Request</button>
+    <button onclick="groupRequest()">Group Request</button>
+    <button onclick="uploadForm()">Upload New Form</button>
+    <div id="user" style="display: none;" data-value="{{ user }}"/>
+  </body>
+</html>

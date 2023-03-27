@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  {% csrf_token %}
+  <head>
+    <script type="text/javascript">
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      const csrftoken = getCookie("csrftoken");
+
+      function selectUser() {
+        var selectedUser = document.getElementById("users").value;
+        location.href = "{% url 'api:list_forms' %}?user=" + selectedUser;
+      }
+
+      function registerUser() {
+        location.href = "{% url 'api:new_user_registration' %}"
+      }
+    </script>
+  </head>
+  <body>
+    <label for="users">Choose a user:</label>
+
+    <select name="users" id="users">
+      {% for user in users %}
+      <option value="{{ user }}">{{ user }}</option>
+      {% endfor %}
+    </select>
+
+    <button onclick="selectUser()">Log in</button>
+    <button onclick="registerUser()">Register</button>
+  </body>
+</html>

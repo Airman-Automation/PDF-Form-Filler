@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello world!</title>
+  </head>
+  <body>
+
+    <div>
+      <h2>About Us</h2>
+      <p>We help software developers do more with PDFs. PDF.js Express gives a flexible and modern UI to your PDF.js viewer while also adding out-of-the-box features like annotations, form filling and signatures.</p>
+
+      <script>
+        {% comment %} var param = /[&?]path=([^&]+)/.exec(location.search); {% endcomment %}
+        var param = document.URL;
+        alert(param);
+      </script>
+
+        <!--
+          Place the following <div> element where you want the PDF to be displayed in your website. You can adjust the size using the width and height attributes.
+        -->
+        <div>
+            {% comment %} <iframe id="pdf-js-viewer" src="templates/web/viewer.html?file=%2Fassets%2Fenvision.pdf" title="webviewer" frameborder="0" width="750" height="900"></iframe> {% endcomment %}
+            <iframe id="pdf-js-viewer" src="/api/" title="webviewer" frameborder="0" width="750" height="900"></iframe>
+        </div>
+
+    </div>
+
+  </body>
+</html>

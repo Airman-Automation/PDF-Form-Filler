@@ -1,0 +1,5 @@
+# List of requirements needed to run this project
+
+django==4.0.3
+djangorestframework==3.13.1
+pdfrw==0.4

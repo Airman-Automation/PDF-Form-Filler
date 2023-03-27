@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <style>
+    body {
+      margin: 10;
+      font-family: "Inter", sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      overflow: auto;
+    }
+  </style>
+
+  {% csrf_token %}
+  <head>
+    <title>New User Registration</title>
+    <h1>New User Registration</h1>
+    <script>
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      const csrftoken = getCookie("csrftoken");
+    </script>
+  </head>
+
+  <script>
+    // function handle_form_submission() {
+    //   var UserRegisterFormDict = new Map();
+    //   return true;
+    // }
+
+    //new js function that takes in all the form inputs and turns it into a json usiing a dictionary
+  </script>
+  <form id="userdata" onsubmit="handle_form_submission()">
+    <table>
+      <label for="fname">Name (Last Name, First Name, Middle Initial) </label>
+      <input type="text" id="name" name="name" />
+      <br />
+      <br />
+      <label for="rank">Job Title and Grade/Rank </label>
+      <input type="text" id="rank" name="JobTitlRank" />
+      <br />
+      <br />
+      <label for="email">Email </label>
+      <input type="text" id="email" required name="Email" />
+      <br />
+      <br />
+      <label for="phonedsn">Phone(DSN) </label>
+      <input type="text" id="phonedsn" name="PhoneDSN" />
+      <br />
+      <br />
+      <label for="organization">Organization </label>
+      <input type="text" id="organization" name="Organization" />
+      <br />
+      <br />
+      <label for="mailingaddress">Official Mailing Address </label>
+      <input type="text" id="mailingaddress" name="OfficialMailingAddress" />
+      <br />
+      <br />
+      Citizenship
+
+      <input type="checkbox" name="citizenship" id="us" />US
+      <input type="checkbox" name="citizenship" id="fn" />FN
+      <input type="checkbox" name="citizenship" id="other" />Other
+      <br />
+      <br />
+
+      Designation of Person
+
+      <input type="checkbox" name="desigperson" id="military" />Military
+      <input type="checkbox" name="desigperson" id="civilian" />Civilian
+      <input type="checkbox" name="desigperson" id="contractor" />Contractor
+      <br />
+      <br />
+      <br />
+      IA Training and Awareness Certification Requirements
+      <br />
+      <input type="checkbox" name=" IATraining" id="iatraining" />I have
+      completed Annual Information Awareness Training.
+      <br />
+      <br />
+      Date Completed
+      <input
+        type="date"
+        name="IADate"
+        id="iadate"
+        min="1970-01-01"
+        max="2090-01-31"
+      />
+
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+    </table>
+    <input type="submit" value="Register User" id="submitbutton" />
+    <script>
+      document.getElementById("submitbutton").onclick = function () {
+        var form = document.getElementById("userdata").elements;
+        var userDataDict = new Map();
+
+        for (var i = 0; i < form.length; i++) {
+          if (form[i].type == "text") {
+            console.log(form[i].name + ": " + form[i].value);
+          }
+          if (form[i].type == "checkbox") {
+            console.log(form[i].id + ": " + form[i].checked);
+          }
+        }
+
+        for (var i = 0; i < form.length; i++) {
+          if (form[i].type == "text") {
+            userDataDict[form[i].id] = form[i].value;
+          }
+          if (form[i].type == "checkbox") {
+            userDataDict[form[i].id] = form[i].checked;
+          }
+          if(form[i].type == "date"){
+            userDataDict[form[i].id] = form[i].value.toString().replace(/-/g,'');
+          }
+        }
+
+        var json = JSON.stringify(userDataDict);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/savenewuser", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            location.href = "{% url 'api:list_users' %}"
+          }
+        };
+
+        xhr.send(json);
+
+        {% comment %} alert("Submit button pressed"); {% endcomment %}
+      };
+    </script>
+  </form>
+</html>
